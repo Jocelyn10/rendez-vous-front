@@ -1,8 +1,8 @@
 import faker from 'faker';
 import PropTypes from 'prop-types';
 import { noCase } from 'change-case';
-import { useRef, useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { useRef, useState, useEffect } from 'react';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { set, sub, formatDistanceToNow } from 'date-fns';
 import { Icon } from '@iconify/react';
 import bellFill from '@iconify/icons-eva/bell-fill';
@@ -25,6 +25,10 @@ import {
   ListSubheader,
   ListItemAvatar
 } from '@material-ui/core';
+
+import axios from 'axios';
+import jwt from 'jsonwebtoken';
+
 // utils
 import { mockImgAvatar } from '../../utils/mockImages';
 // components
@@ -168,10 +172,63 @@ function NotificationItem({ notification }) {
 }
 
 export default function NotificationsPopover() {
+  const notificationTab = [];
   const anchorRef = useRef(null);
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState(NOTIFICATIONS);
   const totalUnRead = notifications.filter((item) => item.isUnRead === true).length;
+
+  const navigate = useNavigate();
+  const userInfo = useRef();
+
+  useEffect(async () => {
+    const tokenData = localStorage.getItem('lmc_token');
+
+    if (tokenData) {
+      const user = jwt.verify(JSON.parse(tokenData), process.env.REACT_APP_JWT_KEY);
+      userInfo.current = user;
+    }
+
+    if (!userInfo.current) {
+      localStorage.removeItem('lmc_token');
+      navigate('/', { replace: true });
+    }
+
+    // For PCA
+    if (userInfo.current.role_id === 1 || userInfo.current.role_id === 6) {
+      const notif = await axios(`${process.env.REACT_APP_BASE_URL}/rendezvouspca/`, {
+        headers: {
+          Authorization: `Bearer ${process.env.REACT_APP_TOKEN}`
+        }
+      });
+
+      notificationTab.push(...notif.data);
+    }
+
+    // For DG
+    if (userInfo.current.role_id === 1 || userInfo.current.role_id === 4) {
+      const notif = await axios(`${process.env.REACT_APP_BASE_URL}/rendezvousdg/`, {
+        headers: {
+          Authorization: `Bearer ${process.env.REACT_APP_TOKEN}`
+        }
+      });
+
+      notificationTab.push(...notif.data);
+    }
+
+    // For DGA
+    if (userInfo.current.role_id === 1 || userInfo.current.role_id === 5) {
+      const notif = await axios(`${process.env.REACT_APP_BASE_URL}/rendezvousdga/`, {
+        headers: {
+          Authorization: `Bearer ${process.env.REACT_APP_TOKEN}`
+        }
+      });
+
+      notificationTab.push(...notif.data);
+    }
+
+    console.log('Notif 2 : ', notificationTab);
+  }, []);
 
   const handleOpen = () => {
     setOpen(true);
@@ -221,6 +278,7 @@ export default function NotificationsPopover() {
             </Typography>
           </Box>
 
+          {/*
           {totalUnRead > 0 && (
             <Tooltip title=" Mark all as read">
               <IconButton color="primary" onClick={handleMarkAllAsRead}>
@@ -228,6 +286,7 @@ export default function NotificationsPopover() {
               </IconButton>
             </Tooltip>
           )}
+          */}
         </Box>
 
         <Divider />
