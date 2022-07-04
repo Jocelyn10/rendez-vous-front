@@ -175,11 +175,12 @@ export default function NotificationsPopover() {
   const notificationTab = [];
   const anchorRef = useRef(null);
   const [open, setOpen] = useState(false);
+  const [totalUnRead, setTotalUnRead] = useState(0);
   const [notifications, setNotifications] = useState(NOTIFICATIONS);
-  const totalUnRead = notifications.filter((item) => item.isUnRead === true).length;
+  // const totalUnRead = notifications.filter((item) => item.isUnRead === true).length;
 
   const navigate = useNavigate();
-  const userInfo = useRef();
+  const userInfo = useRef(null);
 
   useEffect(async () => {
     const tokenData = localStorage.getItem('lmc_token');
@@ -228,6 +229,9 @@ export default function NotificationsPopover() {
     }
 
     console.log('Notif 2 : ', notificationTab);
+    setTotalUnRead(
+      notificationTab.filter((item) => item.confirmation == null && item.status == null).length
+    );
   }, []);
 
   const handleOpen = () => {
@@ -238,6 +242,7 @@ export default function NotificationsPopover() {
     setOpen(false);
   };
 
+  /*
   const handleMarkAllAsRead = () => {
     setNotifications(
       notifications.map((notification) => ({
@@ -246,6 +251,7 @@ export default function NotificationsPopover() {
       }))
     );
   };
+  */
 
   return (
     <>
