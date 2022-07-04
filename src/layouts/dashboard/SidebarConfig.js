@@ -22,8 +22,6 @@ export default function SidebarConfig() {
   if (tokenData) {
     const user = jwt.verify(JSON.parse(tokenData), process.env.REACT_APP_JWT_KEY);
 
-    console.log('user : ', user);
-
     if (!user) {
       localStorage.removeItem('lmc_token');
       sidebarConfig = [];
