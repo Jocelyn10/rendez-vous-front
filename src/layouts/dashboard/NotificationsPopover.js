@@ -177,7 +177,6 @@ export default function NotificationsPopover() {
   const [open, setOpen] = useState(false);
   const [totalUnRead, setTotalUnRead] = useState(0);
   const [notifications, setNotifications] = useState(NOTIFICATIONS);
-  // const totalUnRead = notifications.filter((item) => item.isUnRead === true).length;
 
   const navigate = useNavigate();
   const userInfo = useRef(null);
@@ -280,7 +279,7 @@ export default function NotificationsPopover() {
           <Box sx={{ flexGrow: 1 }}>
             <Typography variant="subtitle1">Notifications</Typography>
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              You have {totalUnRead} unread messages
+              Vous avez {totalUnRead} notifications non lue{totalUnRead > 1 ? 's' : ''}
             </Typography>
           </Box>
 
@@ -298,40 +297,16 @@ export default function NotificationsPopover() {
         <Divider />
 
         <Scrollbar sx={{ height: { xs: 340, sm: 'auto' } }}>
-          <List
-            disablePadding
-            subheader={
-              <ListSubheader disableSticky sx={{ py: 1, px: 2.5, typography: 'overline' }}>
-                New
-              </ListSubheader>
-            }
-          >
+          <List disablePadding>
+            {/*
             {notifications.slice(0, 2).map((notification) => (
               <NotificationItem key={notification.id} notification={notification} />
-            ))}
-          </List>
-
-          <List
-            disablePadding
-            subheader={
-              <ListSubheader disableSticky sx={{ py: 1, px: 2.5, typography: 'overline' }}>
-                Before that
-              </ListSubheader>
-            }
-          >
-            {notifications.slice(2, 5).map((notification) => (
+            ))} */}
+            {notificationTab.map((notification) => (
               <NotificationItem key={notification.id} notification={notification} />
             ))}
           </List>
         </Scrollbar>
-
-        <Divider />
-
-        <Box sx={{ p: 1 }}>
-          <Button fullWidth disableRipple component={RouterLink} to="#">
-            View All
-          </Button>
-        </Box>
       </MenuPopover>
     </>
   );
